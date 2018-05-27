@@ -6,36 +6,60 @@ package LongestPalindromicSubstring;
  */
 public class Solution {
 
-	public static String longestPalindrome(String s) {
-		int len = s.length();
-		int maxPalindroneLength = 0;
-		String longest = "";
+	static String str;
+	static int strLength;
+	static String longestPalindrome;
+	static int maxPalindromeLength;
 
-		for (int i = len; i > 0; i--) {
-			// try all substrings with length = i
-			for (int k = 0; k <= len - i; k++) {
-				String testSubstring = s.substring(k, k + i);
-				int testSubstringLength = testSubstring.length();
-				if (isPalindrome(testSubstring) && testSubstringLength > maxPalindroneLength) {
-					longest = testSubstring;
-					maxPalindroneLength = testSubstringLength;
-				}
-			}
+	public static String longestPalindrome(String s) {
+		str = s;
+		strLength = s.length();
+		longestPalindrome = s.substring(0,1);
+		maxPalindromeLength = 1;
+
+		for (int i = 1; i < strLength; i++) {
+			getLongestOddLengthPalindromeCenteredAtIndex(i);
 		}
-		return longest;
+
+		for (int i = 0; i < strLength -1; i++) {
+			getLongestEvenLengthPalindromeLeftIndexStartingAt(i);
+		}
+		return longestPalindrome;
 	}
 
-	private static boolean isPalindrome(String s) {
-		int len = s.length();
-		for (int i = 0; i < len / 2; i++) {
-			if (s.charAt(i) != s.charAt(len - i - 1)) {
-				return false;
+	private static void getLongestOddLengthPalindromeCenteredAtIndex(int centerIndex) {
+		// start with substr of length 3
+		int leftIndex = centerIndex - 1;
+		int rightIndex = centerIndex + 1;
+
+		checkPalindromes(leftIndex, rightIndex);
+	}
+
+	private static void getLongestEvenLengthPalindromeLeftIndexStartingAt(int leftIndex) {
+		// start with substr of length 2; maxPalindrome length at this point is guaranteed to be odd#
+		int rightIndex = leftIndex + 1;
+
+		checkPalindromes(leftIndex, rightIndex);
+	}
+
+	private static void checkPalindromes(int leftIndex, int rightIndex) {
+		int substringLength = rightIndex - leftIndex + 1;
+		while (leftIndex >= 0 && rightIndex < strLength) {
+			if (str.charAt(leftIndex) == str.charAt(rightIndex)) {
+				if (substringLength > maxPalindromeLength) {
+					maxPalindromeLength = substringLength;
+					longestPalindrome = str.substring(leftIndex, rightIndex+1);
+				}
+				leftIndex--;
+				rightIndex++;
+				substringLength += 2;
+			} else {
+				break;
 			}
 		}
-		return true;
 	}
 
 	public static void main (String[] args) {
-		longestPalindrome("babds");
+		System.out.println(longestPalindrome("aaabaaaa"));
 	}
 }

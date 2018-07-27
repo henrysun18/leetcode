@@ -1,7 +1,8 @@
 package RegularExpressionMatching;
 
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -11,53 +12,21 @@ import java.util.Stack;
 public class Solution {
 
 	public static boolean isMatch(String s, String p) {
-		if (s.equals("") && p.equals("")) {
-			return true;
-		} else if (!s.equals("") && p.equals("")) { //still have chars left unconsumed
-			return false;
-		}
+		boolean dp[][] = new boolean[s.length() + 1][p.length() + 1];
+		dp[s.length()][p.length()] = true;
 
-		if (expectSpecificCharacterOnce(s, p)) {
-			if (!s.equals("") && s.charAt(0) == p.charAt(0)) {
-				return isMatch(s.substring(1), p.substring(1));
-			} else {
-				return false;
-			}
-		} else if (expectAnySingleCharacterOnce(s, p)) {
-			return !s.equals("") && isMatch(s.substring(1), p.substring(1));
-		} else {
-			char precedingCharToConsume = p.charAt(0);
-			boolean precedingCharIsWild = precedingCharToConsume == '.';
-			Stack possibleNextCharStartIndices = new Stack();
-
-			possibleNextCharStartIndices.add(0);
-			for (int i = 0; i < s.length(); i++) {
-				if (precedingCharIsWild) {
-					possibleNextCharStartIndices.add(i+1);
-				} else if (s.charAt(i) == precedingCharToConsume) {
-					possibleNextCharStartIndices.add(i+1);
+		for (int i = s.length(); i >= 0; i--) { //need to test with empty s since s="" p="c" should be false
+			for (int j = p.length()-1; j >= 0; j--) {
+				boolean isFirstCharacterMatchPossible = i < s.length() && (p.charAt(j) == s.charAt(i) || p.charAt(j) == '.');
+				if (j+1 < p.length() && p.charAt(j+1) == '*') {
+					dp[i][j] = dp[i][j+2] || isFirstCharacterMatchPossible && dp[i+1][j];
 				} else {
-					break; //can't consume any further
-				}
-			}
-
-			while (possibleNextCharStartIndices.size() > 0) { //start popping and backtrack if necessary
-				int possibleStartIndexOfCharAfterMatching = (int) possibleNextCharStartIndices.pop();
-				if (isMatch(s.substring(possibleStartIndexOfCharAfterMatching), p.substring(2))) {
-					return true;
+					dp[i][j] = isFirstCharacterMatchPossible && dp[i+1][j+1];
 				}
 			}
 		}
 
-		return false;
-	}
-
-	private static boolean expectSpecificCharacterOnce(String s, String p) {
-		return p.charAt(0) != '.' && (p.length() == 1 || p.charAt(1) != '*');
-	}
-
-	private static boolean expectAnySingleCharacterOnce(String s, String p) {
-		return p.charAt(0) == '.' && (p.length() == 1 || p.charAt(1) != '*');
+		return dp[0][0];
 	}
 
 	public static void main(String[] args) {
@@ -68,5 +37,6 @@ public class Solution {
 		System.out.println(true == isMatch("aaa", "a*a"));
 		System.out.println(true == isMatch("aab", "c*a*b*"));
 		System.out.println(true == isMatch("aab", "c*a*b"));
+		System.out.println(false == isMatch("ab", ".*c"));
 	}
 }

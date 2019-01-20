@@ -1,5 +1,3 @@
-package AddTwoNumbers;
-
 /**
  * Created by Henry on 5/16/2018.
  * Problem 2
@@ -15,7 +13,7 @@ class ListNode {
 	}
 }
 
-class Solution {
+class AddTwoNumbers {
 	public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
 		int currDigit = l1.val + l2.val;
 		int carry = currDigit / 10;

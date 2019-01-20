@@ -1,5 +1,3 @@
-package EncodeAndDecodeTinyURL;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +5,7 @@ import java.util.List;
  * Created by Henry in 2017.
  * Problem 535
  */
-public class Codec {
+class EncodeAndDecodeTinyURL {
 
 	List<String> savedUrls = new ArrayList<String>();
 
@@ -23,6 +21,6 @@ public class Codec {
 	}
 }
 
-// Your Codec object will be instantiated and called as such:
-// Codec codec = new Codec();
+// Your EncodeAndDecodeTinyURL object will be instantiated and called as such:
+// EncodeAndDecodeTinyURL codec = new EncodeAndDecodeTinyURL();
 // codec.decode(codec.encode(url));

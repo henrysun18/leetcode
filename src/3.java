@@ -1,10 +1,8 @@
-package LongestSubstringWithoutRepeatingCharacters;
-
 /**
  * Created by Henry on 5/17/2018.
  * Problem 3
  */
-public class Solution {
+class LongestSubstringWithoutRepeatingCharacters {
 	public static int lengthOfLongestSubstring(String s) {
 		StringBuilder sb = new StringBuilder();
 		int longestLength = 0;

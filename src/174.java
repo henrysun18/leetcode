@@ -1,10 +1,8 @@
-package DungeonGame;
-
 /**
  * Created by Henry on 5/18/2018.
  * Problem 174
  */
-public class Solution {
+class DungeonGame {
 	public static int calculateMinimumHP(int[][] dungeon) {
 		int m = dungeon.length;
 		int n = dungeon[0].length;

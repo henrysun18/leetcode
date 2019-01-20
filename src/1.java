@@ -1,5 +1,3 @@
-package TwoSum;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,7 +5,7 @@ import java.util.Map;
  * Created by Henry on 5/14/2018.
  * Problem 1
  */
-public class Solution {
+class TwoSum {
 	public int[] twoSum(int[] nums, int target) {
 
 		Map pastNums = new HashMap<Integer, Integer>(); //key: num; value: index

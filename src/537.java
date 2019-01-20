@@ -1,10 +1,8 @@
-package ComplexNumberMultiplication;
-
 /**
  * Created by Henry in 2017.
  * Problem 537
  */
-public class Solution {
+class ComplexNumberMultiplication {
 	public String complexNumberMultiply(String num1, String num2) {
 
 		int num1PlusIndex = num1.indexOf('+');

@@ -1,10 +1,8 @@
-package LongestPalindromicSubstring;
-
 /**
  * Created by Henry on 5/20/2018.
  * Problem 5
  */
-public class Solution {
+class LongestPalindromicSubstring {
 
 	static String str;
 	static int strLength;

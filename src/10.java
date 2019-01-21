@@ -1,15 +1,8 @@
-package RegularExpressionMatching;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-
 /**
  * Created by Henry on 5/30/2018.
  * Problem 10
  */
-public class Solution {
+class RegularExpressionMatching {
 
 	public static boolean isMatch(String s, String p) {
 		boolean dp[][] = new boolean[s.length() + 1][p.length() + 1];

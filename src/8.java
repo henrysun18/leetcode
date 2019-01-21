@@ -1,10 +1,8 @@
-package StringToIntegerAtoi;
-
 /**
  * Created by Henry on 5/26/2018.
  * Problem 8
  */
-public class Solution {
+class StringToIntegerAtio {
 	public int myAtoi(String str) {
 
 		String strWithoutLeadingSpaces = str.trim();

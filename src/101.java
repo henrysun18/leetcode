@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 class SymmetricTree {
@@ -56,5 +57,39 @@ class SymmetricTree {
 		} else {
 			path.add(root);
 		}
+	}
+
+
+
+
+	public boolean isSymmetricIterative(TreeNode root) {
+		// traversal of left side should be opposite of the traversal of right side
+		// include nulls as well
+		LinkedList<TreeNode> left = new LinkedList<>();
+		LinkedList<TreeNode> right = new LinkedList<>();
+
+		if (root == null) {
+			return true;
+		}
+		left.add(root.left);
+		right.add(root.right);
+
+		while (!left.isEmpty() || !right.isEmpty()) {
+			TreeNode l = left.removeLast();
+			TreeNode r = right.removeLast();
+
+			if (l == null && r == null) {
+				continue;
+			} else if (l != null && r != null && l.val == r.val) {
+				left.add(l.left);
+				left.add(l.right);
+				right.add(r.right);
+				right.add(r.left);
+			} else {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

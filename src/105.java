@@ -13,33 +13,40 @@ class ConstructBinaryTreeFromPreorderAndInorderTraversal {
 		}
 
 		boolean processingPreorder = true;
-		int pre = 1;
+		boolean currAtPre = true;
+		int pre = 0;
 		int in = 0;
 
 		Map<Integer, TreeNode> seen = new HashMap<>();
+		seen.put(preorder[0], treeNodes[0]);
 
 		while (pre < preorder.length && in < inorder.length) {
-			TreeNode curr = processingPreorder ? treeNodes[pre-1] : seen.get(inorder[in-1]);
+			TreeNode curr = currAtPre ? treeNodes[pre] : seen.get(inorder[in-1]);
 
 			if (processingPreorder) {
-				if (curr.left == null) {
-					curr.left = treeNodes[pre]; //go left until we see they're equal
-				} else {
-					curr.right = treeNodes[pre];
-				}
-
 				seen.put(preorder[pre], treeNodes[pre]);
+
 				if (preorder[pre] == inorder[in]) {
 					processingPreorder = false;
+					in++;
+					continue;
+				}
+
+				if (!currAtPre) {
+					curr.right = treeNodes[pre+1];
+					currAtPre = true;
+				} else {
+					curr.left = treeNodes[pre+1];
 				}
 
 				pre++;
 			} else {
-				if (!seen.containsKey(inorder[in])) {
+				if (seen.containsKey(inorder[in])) {
+					in++;
+				} else {
 					processingPreorder = true;
+					currAtPre = false;
 				}
-
-				in++;
 			}
 		}
 

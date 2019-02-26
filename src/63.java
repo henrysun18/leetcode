@@ -46,7 +46,46 @@ class UniquePathsII {
 		return numPaths[0][0];
 	}
 
-	public int uniquePathsWithObstacleRecursive(int[][] obstacleGrid) {
 
+
+
+
+
+
+	
+	public int uniquePathsWithObstaclesTopDown(int[][] obstacleGrid) {
+		if (obstacleGrid.length == 0 || obstacleGrid[0].length == 0) {
+			return 0;
+		}
+		int m = obstacleGrid.length;
+		int n = obstacleGrid[0].length;
+
+		int[][] numPaths = new int[m][n];
+		for (int i = 0; i < m; i++) {
+			for (int j = 0; j < n; j++) {
+				numPaths[i][j] = -1;
+			}
+		}
+
+		return numPaths(obstacleGrid, 0, 0, numPaths);
+	}
+	private int numPaths(int[][] grid, int row, int col, int[][] numPaths) {
+		if (row >= grid.length || col >= grid[0].length) {
+			return 0;
+		}
+		if (row == grid.length-1 && col == grid[0].length-1) {
+			return 1 ^ grid[row][col];
+		}
+		if (numPaths[row][col] != -1) {
+			return numPaths[row][col];
+		}
+		if (grid[row][col] == 1) {
+			numPaths[row][col] = 0;
+			return 0;
+		}
+
+		int paths = numPaths(grid, row+1, col, numPaths) + numPaths(grid, row, col+1, numPaths);
+		numPaths[row][col] = paths;
+		return paths;
 	}
 }

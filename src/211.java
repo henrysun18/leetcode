@@ -1,54 +1,70 @@
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 class AddAndSearchWord {
 
-	//don't go with tree structure, unnecessary dependency on a wrapper class
-	private List<Map<Character, Boolean>> lettersAndTerminatorsAvailable;
+	private TrieNode root;
 
 	/** Initialize your data structure here. */
 	public AddAndSearchWord() {
-		lettersAndTerminatorsAvailable = new LinkedList<>();
+		root = new TrieNode(false);
 	}
 
 	/** Adds a word into the data structure. */
 	public void addWord(String word) {
+		TrieNode curr = root;
 		for (int i = 0; i < word.length(); i++) {
-			if (lettersAndTerminatorsAvailable.size() == i) {
-				lettersAndTerminatorsAvailable.add(new HashMap<>());
-			}
 			char c = word.charAt(i);
-			if (c == '.') {
-				continue;
-			}
-			if (i == word.length()-1) {
-				lettersAndTerminatorsAvailable.get(i).put(c, true);
+
+			if (i == word.length() - 1) {
+				if (!curr.children.containsKey(c)) {
+					curr.children.put(c, new TrieNode(true));
+				} else {
+					curr.children.get(c).isWord = true;
+				}
+
 			} else {
-				lettersAndTerminatorsAvailable.get(i).putIfAbsent(c, false); //wont override if already true
+				curr.children.putIfAbsent(c, new TrieNode(false));
+				curr = curr.children.get(c);
 			}
 		}
 	}
 
 	/** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
 	public boolean search(String word) {
-		if (word == null) {
-			return false;
-		}
-		if (word.length() > lettersAndTerminatorsAvailable.size()) {
-			return false;
-		}
+		return search(word, root);
+	}
+
+	private boolean search(String word, TrieNode root) {
+		TrieNode curr = root;
 		for (int i = 0; i < word.length(); i++) {
 			char c = word.charAt(i);
 			if (c == '.') {
-				continue;
-			}
-			if (!lettersAndTerminatorsAvailable.get(i).containsKey(c)) {
+				//search every child
+				for (TrieNode child : curr.children.values()) {
+					if (search(word.substring(i+1), child)) {
+						return true;
+					}
+				}
 				return false;
 			}
+			if (!curr.children.containsKey(c)) {
+				return false;
+			}
+
+			curr = curr.children.get(c);
 		}
-		int lastIndex = word.length()-1;
-		return lettersAndTerminatorsAvailable.get(lastIndex).get(word.charAt(lastIndex)) == true;
+
+		return curr.isWord;
+	}
+}
+
+class TrieNode {
+	public Map<Character, TrieNode> children;
+	public boolean isWord;
+
+	public TrieNode(boolean isWord) {
+		this.isWord = isWord;
+		this.children = new HashMap<>();
 	}
 }

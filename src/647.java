@@ -11,34 +11,30 @@ class PalindromicSubstring {
 			// chs[i] is the start point
 			res++;
 
-			int left = i-1;
-			int right = i+1;
-			while (left >= 0 && right < s.length()) {
-				if (chs[left] == chs[right]) {
-					res++;
-					left--;
-					right++;
-				} else {
-					break;
-				}
-			}
+			res += countSubstrings(chs, i-1, i+1);
 		}
 
 		for (int i = 0; i < s.length() - 1; i++) {
 			//chs[i] and chs[i+1] is the start substring
-			int left = i;
-			int right = i+1;
-			while (left >= 0 && right < s.length()) {
-				if (chs[left] == chs[right]) {
-					res++;
-					left--;
-					right++;
-				} else {
-					break;
-				}
-			}
+			res += countSubstrings(chs, i, i+1);
 		}
 
 		return res;
+	}
+
+	private int countSubstrings(char[] chs, int left, int right) {
+		int count = 0;
+
+		while (left >= 0 && right < chs.length) {
+			if (chs[left] == chs[right]) {
+				count++;
+				left--;
+				right++;
+			} else {
+				break;
+			}
+		}
+
+		return count;
 	}
 }

@@ -6,18 +6,31 @@ class RemoveInvalidParentheses {
 	public List<String> removeInvalidParentheses(String s) {
 		// brute force is to generate all subsets then validate parentheses on at most all of them
 		// break early as soon as we see a bad paren, like (()))....
-
+		int misplacedLeft = 0;
+		int misplacedRight = 0;
+		for (char c : s.toCharArray()) {
+			if (c == '(') {
+				misplacedLeft++;
+			} else if (c == ')') {
+				if (misplacedLeft == 0) {
+					misplacedRight++;
+				} else {
+					misplacedLeft--;
+				}
+			}
+		}
+		// now we know that we can only discard up to misplacedLeft amount of ( and misplacedRight amount of )
 
 		List<String> res = new ArrayList<>();
 
 		// generate all subsets while repopulating res list if we get equally long / longer valid string
-		getLongestSubsets(s.toCharArray(), 0, 0, new StringBuilder(), res);
+		getLongestSubsets(s, 0, 0, misplacedLeft, misplacedRight, new StringBuilder(), res);
 
 		return new ArrayList<>(new HashSet<>(res)); //remove duplicates by convert to set and back to list lol
 	}
 
-	private void getLongestSubsets(char[] chs, int numOpenParens, int curr, StringBuilder expr, List<String> res) {
-		if (curr == chs.length) {
+	private void getLongestSubsets(String s, int numOpenParens, int curr, int misplacedLeft, int misplacedRight, StringBuilder expr, List<String> res) {
+		if (curr == s.length()) {
 			if (numOpenParens > 0) return;
 			// already validated by this point, so add this expr to res if it's long
 			if (!res.isEmpty() && res.get(0).length() < expr.length()) {
@@ -30,30 +43,32 @@ class RemoveInvalidParentheses {
 			return;
 		}
 
-		char c = chs[curr];
+		char c = s.charAt(curr);
 		if (c == '(') {
-			//don't add (
-			getLongestSubsets(chs, numOpenParens, curr+1, expr, res);
-
 			//add (
 			expr.append(c);
-			getLongestSubsets(chs, numOpenParens+1, curr+1, expr, res);
+			getLongestSubsets(s, numOpenParens+1, curr+1, misplacedLeft, misplacedRight, expr, res);
 			backtrack(expr);
 
+			if (misplacedLeft > 0) {
+				//don't add (
+				getLongestSubsets(s, numOpenParens, curr+1, misplacedLeft-1, misplacedRight, expr, res);
+			}
 		} else if (c == ')') {
 			if (numOpenParens > 0) {
 				// add )
 				expr.append(c);
-				getLongestSubsets(chs, numOpenParens-1, curr+1, expr, res);
+				getLongestSubsets(s, numOpenParens-1, curr+1, misplacedLeft, misplacedRight, expr, res);
 				backtrack(expr);
 			}
-			//dont add )
-			getLongestSubsets(chs, numOpenParens, curr+1, expr, res);
-
+			if (misplacedRight > 0) {
+				//dont add )
+				getLongestSubsets(s, numOpenParens, curr+1, misplacedLeft, misplacedRight-1, expr, res);
+			}
 		} else {
 			//always add non parens
 			expr.append(c);
-			getLongestSubsets(chs, numOpenParens, curr+1, expr, res);
+			getLongestSubsets(s, numOpenParens, curr+1, misplacedLeft, misplacedRight, expr, res);
 			backtrack(expr);
 		}
 	}

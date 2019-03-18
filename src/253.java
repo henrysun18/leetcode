@@ -14,6 +14,32 @@ import java.util.List;
  */
 class MeetingRoomsII {
 	public int minMeetingRooms(Interval[] intervals) {
+		// sort starts and ends into 2 separate arrays
+		// logic is to go through all sorted starting times, incrementing rooms needed until there's an end time earlier,
+		int[] starts = new int[intervals.length];
+		int[] ends = new int[intervals.length];
+		for (int i = 0; i < intervals.length; i++) {
+			starts[i] = intervals[i].start;
+			ends[i] = intervals[i].end;
+		}
+
+		Arrays.sort(starts);
+		Arrays.sort(ends);
+
+		int rooms = 0;
+		int endIndex = 0;
+		for (int start : starts) {
+			if (start < ends[endIndex]) {
+				rooms++;
+			} else {
+				endIndex++;
+			}
+		}
+
+		return rooms;
+	}
+
+	public int minMeetingRoomsWithoutLookingAtSolution(Interval[] intervals) {
 		// greedy approach is for all intervals, take the first available room
 		// O(n^2) time since every interval has to check at most all other intervals to find free room?
 		//  assuming we store availableRooms as a list of interval lists
@@ -35,6 +61,7 @@ class MeetingRoomsII {
 			}
 		});
 
+		Arrays.sort(intervals, (a, b) -> a.start - b.start);
 		List<Integer> roomEndTimes = new ArrayList<>();
 		for (Interval interval : intervals) {
 			int roomWithBestEndTime = -1;

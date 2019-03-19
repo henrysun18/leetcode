@@ -1,32 +1,36 @@
-import java.util.LinkedList;
-import java.util.List;
-
 class ConvertBinarySearchTreeToSortedDoublyLinkedList {
+
+	private static Node prev;
 
 	public Node treeToDoublyList(Node root) {
 		if (root == null) return null;
 
-		List<Node> traversal = new LinkedList<>();
-		traverse(root, traversal);
+		//simply do an in-order traversal
+		//prev.right = root
+		//root.left = prev;
+		//first node will have dummy.right = first and first.left = dummy
+		//last node will not connect to dummy
 
-		for (int i = 0; i < traversal.size(); i++) {
-			int left = (i+traversal.size()-1) % traversal.size();
-			int right = (i+1) % traversal.size();
-			traversal.get(i).left = traversal.get(left);
-			traversal.get(left).right = traversal.get(i);
-		}
+		//then we need to, in the end, update prev and connect it with dummy.right
+		Node dummy = new Node(0, null, null);
+		prev = dummy;
+		traverse(root);
 
-		return traversal.get(0);
+		prev.right = dummy.right;
+		dummy.right.left = prev;
+		return dummy.right;
 	}
 
-	private void traverse(Node root, List<Node> traversal) {
-		if (root.left != null) {
-			traverse(root.left, traversal);
-		}
-		traversal.add(root);
-		if (root.right != null) {
-			traverse(root.right, traversal);
-		}
+	private void traverse(Node root) {
+		if (root == null) return;
+
+		traverse(root.left);
+
+		prev.right = root;
+		root.left = prev;
+		prev = root;
+
+		traverse(root.right);
 	}
 
 	class Node {

@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 
 class TopKFrequentElements {
 	public List<Integer> topKFrequent(int[] nums, int k) {
@@ -20,23 +19,22 @@ class TopKFrequentElements {
 			freqs.put(num, freqs.getOrDefault(num, 0)+1);
 		}
 
-		PriorityQueue<Integer> minHeap = new PriorityQueue<>((a, b) -> freqs.get(a) - freqs.get(b));
-		PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b) -> freqs.get(b) - freqs.get(a));
+		List<Integer>[] freqBuckets = new List[nums.length+1];
 
 		for (Integer num : freqs.keySet()) {
 			int freq = freqs.get(num);
 
-			minHeap.offer(num);
-			maxHeap.offer(num);
-			if (minHeap.size() > k) {
-				int min = minHeap.poll();
-				maxHeap.remove(min);
+			if (freqBuckets[freq] == null) {
+				freqBuckets[freq] = new ArrayList<>();
 			}
+			freqBuckets[freq].add(num);
 		}
 
 		List<Integer> res = new ArrayList<>();
-		for (int i = 0; i < k; i++) {
-			res.add(maxHeap.poll());
+		for (int i = freqBuckets.length-1; res.size() < k; i--) {
+			if (freqBuckets[i] != null) {
+				res.addAll(freqBuckets[i]);
+			}
 		}
 		return res;
 	}

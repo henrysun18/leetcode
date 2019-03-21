@@ -1,6 +1,32 @@
+import java.util.HashMap;
+import java.util.Map;
+
 class HouseRobberIII {
 
+
+
 	public int rob(TreeNode root) {
+		Map<TreeNode, Integer> dp = new HashMap<>();
+		return rob(root, dp);
+	}
+
+	private int rob(TreeNode root, Map<TreeNode, Integer> dp) {
+		if (root == null) return 0;
+		if (root.left == null && root.right == null) return root.val;
+		if (dp.containsKey(root)) return dp.get(root);
+
+		int skipThis = rob(root.left, dp) + rob(root.right, dp);
+		int dontSkipThis = root.val
+				+ (root.left == null ? 0 : rob(root.left.left, dp) + rob(root.left.right, dp))
+				+ (root.right == null ? 0 : rob(root.right.left, dp) + rob(root.right.right, dp));
+
+		int maxRobbed = Math.max(skipThis, dontSkipThis);
+		dp.put(root, maxRobbed);
+		return maxRobbed;
+	}
+
+
+	public int robWithoutDp(TreeNode root) {
 
 		if (root == null) return 0;
 		if (root.left == null && root.right == null) return root.val;
@@ -12,11 +38,6 @@ class HouseRobberIII {
 
 		return Math.max(skipThis, dontSkipThis);
 	}
-
-
-
-
-
 
 	// ACTUALLY NOT DP IF YOU THINK ABOUT IT, NO ACTUAL REUSE GOING ON
 	// SLOWER THAN WITHOUT THE MAP

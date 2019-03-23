@@ -33,21 +33,24 @@ class MaximalRectangle {
 		int maxRectangle = 0;
 
 		for (int row = 0; row < dp.length; row++) {
-			int minHeight = Integer.MAX_VALUE; //reset these counters every row
-			int length = 0;
-
-			for (int col = 0; col < dp[0].length; col++) {
-				int curr = dp[row][col];
-				if (curr == 0) { // check for == 0 since it's a matrix of integers, don't check for '0' lol.....
-					length = 0;
-					minHeight = Integer.MAX_VALUE;
-				} else {
-					minHeight = Math.min(minHeight, curr);
-					length++;
-					int currRectSize = minHeight * length;
-					System.out.println(minHeight + ":" + length);
-					if (currRectSize > maxRectangle) {
-						maxRectangle = currRectSize;
+			// now the objective is for every row, find the greatest consecutive chain of numbers where length * (min number in chain) = max value
+			// if chain is 1,5,4,1,5,2,0,7,1 we want max = 2*4 instead of 2*2 or 1*6 or 1*7
+			// can easily accomplish this small task in O(n^2) time and simply trying all chains
+			// can we do this in O(n) time????
+			//dont think so...
+			for (int i = 0; i < dp[0].length; i++) {
+				int minHeight = Integer.MAX_VALUE;
+				int length = 0;
+				for (int j = i; j < dp[0].length; j++) {
+					if (dp[row][j] == 0) {
+						length = 0;
+						minHeight = Integer.MAX_VALUE;
+					} else {
+						length++;
+						minHeight = Math.min(dp[row][j], minHeight);
+						if (length * minHeight > maxRectangle) {
+							maxRectangle = length * minHeight;
+						}
 					}
 				}
 			}

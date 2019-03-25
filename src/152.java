@@ -3,39 +3,30 @@ class MaximumProductSubarray {
 		if (nums == null || nums.length == 0) {
 			return 0;
 		}
-		if (nums.length == 1) {
-			return nums[0];
-		}
 
-		int[] mins = new int[nums.length]; //each element is the min product if subarray starts from i
-		int[] maxes = new int[nums.length]; //each element is the max product if subarray starts from i
+		int max = nums[0];
 
-		int last = nums[nums.length-1];
-		if (last < 0) {
-			mins[nums.length-1] = last;
-		} else {
-			maxes[nums.length-1] = last;
-		}
+		int currMax = max;
+		int currMin = max;
+		for (int i = 1; i < nums.length; i++) {
+			if (nums[i] < 0) {
+				// if -1,-2,-9,-6 then at the end of each for loop we have:
+				// max = 2, min = -2
+				// max = 18, min = -18
+				// max = 108, min = -108
+				int tmp = currMax;
+				currMax = currMin;
+				currMin = tmp;
+			}
 
-		int maxProduct = 0;
+			currMax = Math.max(nums[i], currMax * nums[i]); //if curr num is positive, 2nd is best. if currnum is negative, currMax is negative now so 2nd is still positive!
+			currMin = Math.min(nums[i], currMin * nums[i]);
 
-		for (int i = nums.length-2; i >= 0; i--) {
-			int curr = nums[i];
-			if (curr < 0) {
-				mins[i] = Math.min(curr * maxes[i+1], curr);
-				maxes[i] = curr * mins[i+1];
-			} else if (curr > 0) {
-				mins[i] = curr * mins[i+1];
-				maxes[i] = Math.max(curr, curr * maxes[i+1]);
+			if (currMax > max) {
+				max = currMax;
 			}
 		}
 
-		for (int max : maxes) {
-			if (max > maxProduct) {
-				maxProduct = max;
-			}
-		}
-
-		return maxProduct;
+		return max;
 	}
 }

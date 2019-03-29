@@ -1,7 +1,27 @@
 import java.util.Stack;
 
 class InorderSuccessorInBST {
-	public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
+
+	public TreeNode inorderSuccessorRecursive(TreeNode root, TreeNode p) {
+		if (root == null) return null;
+		if (root.val == p.val) {
+			return leftmost(root.right);
+		} else if (p.val > root.val) {
+			return inorderSuccessorRecursive(root.right, p);
+		} else {
+			TreeNode successor = inorderSuccessorRecursive(root.left, p);
+			return successor == null ? root : successor;
+		}
+
+	}
+	private TreeNode leftmost(TreeNode root) {
+		if (root == null) return null;
+		if (root.left == null) return root;
+		return leftmost(root.left);
+	}
+
+
+	public TreeNode inorderSuccessorIterative(TreeNode root, TreeNode p) {
 		// literally just do a backwards inorder traversal and return prev once we find p
 		// actually no, cuz that's worst case O(n), but we have a BST
 		// so let's just find the node first, then find the key greater than it

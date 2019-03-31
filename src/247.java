@@ -6,6 +6,41 @@ import java.util.List;
 import java.util.Map;
 
 class StrobogrammaticNumberII {
+
+	public List<String> findStrobogrammaticCONCISE(int n) {
+		// we can use backtracking
+		// bsaically make a burger of strobogrammatic pairs
+		// can start with 1, 6, 8, 9
+		// can sandwich 0, 1, 6, 8, 9 in the middle if given as pairs
+		// can sandwich 0, 1, 8 if n is odd and we're at the middle
+
+		return find(n, true);
+	}
+
+	private List<String> find(int n, boolean isOuterLayer) {
+		if (n == 0) return Arrays.asList(""); // empty string instead of empty list so for loop is still iterating!
+		if (n == 1) return Arrays.asList("0", "1", "8");
+
+		List<String> innerFind = find(n-2, false);
+		List<String> res = new LinkedList<>();
+		for (String s : innerFind) {
+			if (!isOuterLayer) {
+				res.add("0" + s + "0");
+			}
+			res.add("1" + s + "1");
+			res.add("6" + s + "9");
+			res.add("8" + s + "8");
+			res.add("9" + s + "6");
+		}
+
+		return res;
+	}
+
+
+
+
+
+
 	public List<String> findStrobogrammatic(int n) {
 		// we can use backtracking
 		// bsaically make a burger of strobogrammatic pairs

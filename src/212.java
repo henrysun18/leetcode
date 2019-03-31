@@ -1,62 +1,65 @@
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 class WordSearchII {
 	public List<String> findWords(char[][] board, String[] words) {
 		if (board == null || board.length == 0 || board[0].length == 0) return new ArrayList();
 
-		// pruning dead paths as early as possible is key
-		Set<String> path = new HashSet<>();
-		Set<String> dict = new HashSet<>(Arrays.asList(words));
-		Set<String> res = new HashSet<>();
-		StringBuilder sb = new StringBuilder();
+		List<String> res = new LinkedList<>();
+		TrieNode t = new TrieNode();
+		for (String word : words) {
+			t.addWord(word);
+		}
+
 		for (int row = 0; row < board.length; row++) {
 			for (int col = 0; col < board[0].length; col++) {
-				findWords(board, dict, row, col, sb, path, res);
+				char first = board[row][col];
+				dfs(board, t, row, col, res);
 			}
 		}
 
-		return new ArrayList<>(res);
+		return res;
 	}
 
-	private void findWords(char[][] board, Set<String> dict, int row, int col, StringBuilder sb, Set<String> path, Set<String> res) {
+	private void dfs(char[][] board, TrieNode t, int row, int col, List<String> res) {
+		if (t == null) return;
 		if (row < 0 || row >= board.length || col < 0 || col >= board[0].length) return;
-		if (res.size() == dict.size()) return;
+		if (board[row][col] == '@') return;
 
-		String key = row+":"+col;
-		if (path.contains(key)) return;
-
-		//dfs logic, add curr to word first
-		sb.append(board[row][col]);
-		path.add(key);
-		String word = sb.toString();
-
-		//ready to add word to path
-		int originalResSize = res.size();
-
-		//continue dfs?
-        /*boolean shouldPrune = true;
-        for (String s : dict) {
-            if (s.startsWith(word)) {
-                shouldPrune = false;
-            }
-        }
-        if (!shouldPrune) {*/
-		if (dict.contains(word)){
-			res.add(word);
-			//still need to continue dfs in case we get a longer word
+		char c = board[row][col];
+		board[row][col] = '@'; //visit
+		t = t.next[c - 'a'];
+		if (t != null && t.word != null) {
+			res.add(t.word);
+			t.word = null; // prevent returning duplicates in the end in this way, instead of using a set
 		}
-		findWords(board, dict, row-1, col, sb, path, res);
-		findWords(board, dict, row+1, col, sb, path, res);
-		findWords(board, dict, row, col-1, sb, path, res);
-		findWords(board, dict, row, col+1, sb, path, res);
-		//}
 
-		//backtrack
-		sb.deleteCharAt(sb.length()-1);
-		path.remove(key);
+		dfs(board, t, row-1, col, res);
+		dfs(board, t, row+1, col, res);
+		dfs(board, t, row, col-1, res);
+		dfs(board, t, row, col+1, res);
+
+
+		board[row][col] = c; //backtrack
+	}
+
+
+	class TrieNode {
+		TrieNode[] next = new TrieNode[26];
+		String word;
+
+		public void addWord(String word) {
+			TrieNode curr = this;
+			for (char c : word.toCharArray()) {
+				if (curr.next[c - 'a'] == null) {
+					curr.next[c - 'a'] = new TrieNode();
+				}
+				curr = curr.next[c - 'a'];
+			}
+			curr.word = word;
+		}
 	}
 }
+
+

@@ -20,61 +20,17 @@ class SortTransformedArray {
 		if (nums.length == 1) return nums;
 
 		//now use two pointers to populate res array. first scan to find the min/max if applicable
-		//boolean increasing = nums[0] < nums[1]; //CANT ASSUME INCREASING OR DECREASING BY JUST FIRST TWO ELEMENTS; SORTED DOES NOT MEAN ALL UNIQUE!!
-		boolean increasing = true;
-		for (int i = 1; i < nums.length; i++) {
-			if (nums[i] < nums[i-1]) {
-				increasing = false;
-				break;
-			} else if (nums[i] > nums[i-1]) { //also need this else if so we can verify increasing == true
-				break;
-			}
-		}
-		int midpointIndex = -1;
-		for (int i = 2; i < nums.length; i++) {
-			if (increasing && nums[i-1] > nums[i]) {
-				midpointIndex = i-1;
-				break;
-			} else if (!increasing && nums[i-1] < nums[i]) {
-				midpointIndex = i-1;
-				break;
-			}
-		}
+		boolean increasing = a < 0; //don't worry about a == 0 case, we'll just never decrement right pointer
 
-		//case 1-4
-		if (increasing && midpointIndex == -1) {
-			return nums;
-		} else if (!increasing && midpointIndex == -1) {
-			//reverse
-			for (int i = 0; i < nums.length/2; i++) {
-				int tmp = nums[i];
-				nums[i] = nums[nums.length-1-i];
-				nums[nums.length-1-i] = tmp;
-			}
-			return nums;
-		} else if (increasing) {
-			int left = 0;
-			int right = nums.length-1;
-			for (int i = 0; i < nums.length; i++) {
-				if (nums[left] < nums[right]) {
-					res[i] = nums[left];
-					left++;
-				} else {
-					res[i] = nums[right];
-					right--;
-				}
-			}
-		} else {
-			int left = midpointIndex;
-			int right = midpointIndex+1;
-			for (int i = 0; i < nums.length; i++) {
-				if (right >= nums.length || left >= 0 && nums[left] < nums[right]) { //check right out of bounds FIRST
-					res[i] = nums[left];
-					left--;
-				} else {
-					res[i] = nums[right];
-					right++;
-				}
+		//don't need to find midpoint. just always have left = 0. if there's a max then fill res from left to right. if there's a min then fill res from right to left
+		int left = 0, right = nums.length-1;
+		for (int i = 0; i < nums.length; i++) {
+			if (increasing) {
+				//populate res array from left to right, since left/right are competing for minimum
+				res[i] = nums[left] < nums[right] ? nums[left++] : nums[right--];
+			} else {
+				//populate res array from right to left, since left/right are competing for maximum
+				res[nums.length-1-i] = nums[left] > nums[right] ? nums[left++] : nums[right--];
 			}
 		}
 		return res;

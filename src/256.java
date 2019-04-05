@@ -7,19 +7,24 @@ class PaintHouse {
 
 		if (costs == null || costs.length == 0 || costs[0].length == 0) return 0;
 
-		int[][] minCosts = new int[costs.length][costs[0].length];
+		//min cost of painting next house red/blue/green
+		//can also just use the costs matrix itself
+		int[] dp = new int[3];
 
 		int lastHouse = costs.length-1;
-		minCosts[lastHouse][0] = costs[lastHouse][0];
-		minCosts[lastHouse][1] = costs[lastHouse][1];
-		minCosts[lastHouse][2] = costs[lastHouse][2];
+		dp[0] = costs[lastHouse][0];
+		dp[1] = costs[lastHouse][1];
+		dp[2] = costs[lastHouse][2];
 
 		for (int house = costs.length-2; house >= 0; house--) {
-			minCosts[house][0] = costs[house][0] + Math.min(minCosts[house+1][1], minCosts[house+1][2]);
-			minCosts[house][1] = costs[house][1] + Math.min(minCosts[house+1][0], minCosts[house+1][2]);
-			minCosts[house][2] = costs[house][2] + Math.min(minCosts[house+1][0], minCosts[house+1][1]);
+			int priceIfHouseIsRed = costs[house][0] + Math.min(dp[1], dp[2]);
+			int priceIfHouseIsBlue = costs[house][1] + Math.min(dp[0], dp[2]);
+			int priceIfHouseIsGreen = costs[house][2] + Math.min(dp[0], dp[1]);
+			dp[0] = priceIfHouseIsRed;
+			dp[1] = priceIfHouseIsBlue;
+			dp[2] = priceIfHouseIsGreen;
 		}
 
-		return Math.min(minCosts[0][0], Math.min(minCosts[0][1], minCosts[0][2]));
+		return Math.min(dp[0], Math.min(dp[1], dp[2]));
 	}
 }

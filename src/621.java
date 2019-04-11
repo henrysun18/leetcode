@@ -22,48 +22,99 @@ class TaskScheduler {
 
 		//go through the array and find the task with the most tasks remaining and can be run the earliest
 
-		int finished = 0;
 		int currTime = 0;
-		int timeOfNextTask = 0;
+		int finished = 0;
 		while (true) {
-			//find the best task to run, it should have the earliest possible start time and most num tasks left
-			int nextTask = tasks[0] - 'A';
-			for (char c : tasks) {
-				int task = (int) (c - 'A');
-				if (numTasks[task] == 0) continue;
+			//go through alphabet and find the char that can be run the earliest and has most tasks remaining
+			int nextTask = 0;
+			int nextTaskTime = Integer.MAX_VALUE;
 
-				//if task can be run immediately and it has the most numTasks
-				if (nextAvailableTaskTime[task] <= currTime) {
-					//System.out.println(nextAvailableTaskTime[task] + " task " + task + " <= " + currTime);
-					if (nextAvailableTaskTime[nextTask] > currTime || numTasks[task] > numTasks[nextTask]) {
-						nextTask = task;
-						timeOfNextTask = nextAvailableTaskTime[task];
+			for (int i = 0; i < 26; i++) {
+				if (numTasks[i] == 0) continue;
+
+				boolean canExecuteAsEarlyAsNextTask = nextAvailableTaskTime[i] == nextTaskTime;
+				boolean canExecuteEarlier = nextAvailableTaskTime[i] < nextTaskTime;
+				boolean canExecuteNow = nextAvailableTaskTime[i] <= currTime;
+				if (canExecuteNow) {
+					//update next task in 2 cases:
+					//1. current next task CANNOT execute now
+					//2. current next task can also execute now, but i has more tasks remaining
+					//DON'T FORGET TO CONSIDER CASE 1!!!!!
+					if (nextAvailableTaskTime[nextTask] > currTime || numTasks[i] > numTasks[nextTask]) {
+						nextTask = i;
 					}
-				} else if (nextAvailableTaskTime[task] < timeOfNextTask || nextAvailableTaskTime[task] == timeOfNextTask && numTasks[task] > numTasks[nextTask]) {
-					//else if task is the earliest possible next task
-					nextTask = task;
-					timeOfNextTask = nextAvailableTaskTime[task];
+					nextTaskTime = currTime; //always do this, otherwise nextTaskTime might stay at MAX_VALUE
+				} else if (canExecuteEarlier) {
+					nextTask = i;
+					nextTaskTime = nextAvailableTaskTime[i];
+				} else if (canExecuteAsEarlyAsNextTask) {
+					if (numTasks[i] > numTasks[nextTask]) {
+						nextTask = i;
+					}
 				}
 			}
-
-			if (nextAvailableTaskTime[nextTask] > currTime) {
-				currTime = nextAvailableTaskTime[nextTask];
+			//if no task can go immediately, we need to set currTime to nextTaskTime to address the idle intervals
+			if (nextTaskTime > currTime) {
+				currTime = nextTaskTime;
 			}
 
-			//execute the task and update state
-			numTasks[nextTask]--;
-			currTime++;
-			nextAvailableTaskTime[nextTask] = currTime + n; //execute AND cooldown included
-
-			timeOfNextTask = nextAvailableTaskTime[nextTask];
+			//best task chosen, now execute and update state
+			numTasks[nextTask]--; //execute
+			currTime++; //increment time
+			nextAvailableTaskTime[nextTask] = currTime + n; //time after executing and cooldown
+			nextTaskTime = nextAvailableTaskTime[nextTask];
 			finished++;
 
-			//System.out.println(nextTask + " was run, afterwards the time is: " + currTime);
 			if (finished == tasks.length) {
 				return currTime;
 			}
 		}
 
+
+
+        /*second attempt, looks correct but logic is convoluted af and i accidentally looped thgouh ALL tasks instead of just 0 to 26 lol too tired
+        int finished = 0;
+        int currTime = 0;
+        int timeOfNextTask = 0;
+        while (true) {
+            //find the best task to run, it should have the earliest possible start time and most num tasks left
+            int nextTask = tasks[0] - 'A';
+            for (char c : tasks) {
+                int task = (int) (c - 'A');
+                if (numTasks[task] == 0) continue;
+
+                //if task can be run immediately and it has the most numTasks
+                if (nextAvailableTaskTime[task] <= currTime) {
+                    //System.out.println(nextAvailableTaskTime[task] + " task " + task + " <= " + currTime);
+                    if (nextAvailableTaskTime[nextTask] > currTime || numTasks[task] > numTasks[nextTask]) {
+                        nextTask = task;
+                        timeOfNextTask = nextAvailableTaskTime[task];
+                    }
+                } else if (nextAvailableTaskTime[task] < timeOfNextTask || nextAvailableTaskTime[task] == timeOfNextTask && numTasks[task] > numTasks[nextTask]) {
+                    //else if task is the earliest possible next task
+                    nextTask = task;
+                    timeOfNextTask = nextAvailableTaskTime[task];
+                }
+            }
+
+            if (nextAvailableTaskTime[nextTask] > currTime) {
+                currTime = nextAvailableTaskTime[nextTask];
+            }
+
+            //execute the task and update state
+            numTasks[nextTask]--;
+            currTime++;
+            nextAvailableTaskTime[nextTask] = currTime + n; //execute AND cooldown included
+
+            timeOfNextTask = nextAvailableTaskTime[nextTask];
+            finished++;
+
+            //System.out.println(nextTask + " was run, afterwards the time is: " + currTime);
+            if (finished == tasks.length) {
+                return currTime;
+            }
+        }
+        */
 
 
 

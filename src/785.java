@@ -3,40 +3,28 @@ import java.util.Queue;
 
 class IsGraphBipartite {
 	public boolean isBipartite(int[][] graph) {
-		int painted[] = new int[graph.length];
-		boolean visited[] = new boolean[graph.length];
-
-		int currColour = 1; //colour from 1 to 2
-
+		int colour[] = new int[graph.length];
+		
 		//for each node, bfs starting from that node and try to 2-colour the graph
 		for (int i = 0; i < graph.length; i++) {
-			if (visited[i]) continue;
+			if (colour[i] != 0) continue;
 
 			Queue<Integer> q = new LinkedList<>();
 			q.add(i);
+			colour[i] = 1; //initialize node at beginning of island with 1, then set all neighbours to -1 and so on
+
 			while (!q.isEmpty()) {
-				//poll everything from queue (curr layer) and try to colour it opposite of previous colour
-				int nodesToPoll = q.size();
-				for (int j = 0; j < nodesToPoll; j++) {
-					int node = q.poll();
-					if (painted[node] == 0) {
-						painted[node] = currColour;
-					} else if (painted[node] > 0 && painted[node] != currColour) {
+				//poll from queue and try to colour it opposite of previous colour
+				int node = q.poll();
+				for (int neighbour : graph[node]) {
+					if (colour[neighbour] == colour[node]) {
 						return false;
 					}
-
-					if (!visited[node]) {
-						//add all of curr layer's neighbours
-						int[] neighbours = graph[node];
-						for (int neighbour : neighbours) {
-							q.add(neighbour);
-						}
-						visited[node] = true;
+					if (colour[neighbour] == 0) {
+						colour[neighbour] = -colour[node];
+						q.add(neighbour);
 					}
 				}
-
-				//change paint colour
-				currColour = currColour == 1 ? 2 : 1;
 			}
 		}
 

@@ -7,17 +7,16 @@ class KClosestPointsToOrigin {
 		//keep a max heap, and when we have K points already, see if we need to replace the max element with something smaller
 		//runtime O(nlgn), space O(K)
 
-		Comparator<int[]> comparator = (point1, point2) ->
-				(point2[0]*point2[0] + point2[1]*point2[1]) - (point1[0]*point1[0] + point1[1]*point1[1]);
+		//negate the comparison get descending order
+		Comparator<int[]> comparator = Comparator.comparing(p -> - (p[0]*p[0] + p[1]*p[1]));
 
 		PriorityQueue<int[]> minHeap = new PriorityQueue<>(comparator);
 
 		for (int[] point : points) {
-			if (minHeap.size() == K) {
-				if (comparator.compare(point, minHeap.peek()) < 0) continue; //ignore point if it's even farther than the farthest we have now
-				minHeap.poll();
+			minHeap.offer(point);
+			if (minHeap.size() > K) {
+				minHeap.poll(); //a lot more concise than before
 			}
-			minHeap.add(point);
 		}
 
 		int[][] res = new int[minHeap.size()][2];

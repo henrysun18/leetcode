@@ -1,4 +1,36 @@
 class CountCompleteTreeNodes {
+
+
+	public int countNodes(TreeNode root) {
+		//if i want to avoid global variables, and at the same time improve time complexity in the worst case, need another approach
+		//compare left depth and right depth
+		//  if same, return 2^(depth+1)-1
+		//  if diff, return 1 + countNodes(root.left) + countNodes(root.right)
+
+		//runtime is O(lgn * lgn) since each countNodes pass is lgn time due to checking left/right depths
+		//and we'll make lgn calls to countNodes, since eventually left/right depth will be the same, and it'll capture a LOT of nodes
+		if (root == null) return 0;
+
+		int leftDepth = getLeftDepth(root.left);
+		int rightDepth = getRightDepth(root.right);
+		if (leftDepth == rightDepth) {
+			return (1 << leftDepth+1) - 1;
+		}
+		return 1 + countNodes(root.left) + countNodes(root.right);
+	}
+
+	private int getLeftDepth(TreeNode node) {
+		if (node == null) return 0;
+		return 1 + getLeftDepth(node.left);
+	}
+	private int getRightDepth(TreeNode node) {
+		if (node == null) return 0;
+		return 1 + getRightDepth(node.right);
+	}
+
+	/* old solution which was still O(n) worst case time, and uses global vars
+
+
 	private int rightHeight = 0;
 	private int missingLeaves = 0;
 	private boolean done = false;
@@ -53,7 +85,7 @@ class CountCompleteTreeNodes {
 		dfs(node.left, height+1);
 	}
 
-
+*/
 
 
 

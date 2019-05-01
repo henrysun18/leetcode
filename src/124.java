@@ -1,4 +1,25 @@
 class BinaryTreeMaximumPathSum {
+
+	private int max = Integer.MIN_VALUE;
+
+	public int maxPathSum(TreeNode root) {
+		//call recursive dfs method that does everything
+		helper(root);
+		return max;
+	}
+
+	//returns the sum of best branch starting at node
+	private int helper(TreeNode node) {
+		if (node == null) return 0;
+		int maxLeftBranchSum = helper(node.left);
+		int maxRightBranchSum = helper(node.right);
+
+		max = Math.max(max, node.val + Math.max(0, maxLeftBranchSum) + Math.max(0, maxRightBranchSum)); //can take left and/or right if it benefits
+
+		return node.val + Math.max(0, Math.max(maxLeftBranchSum, maxRightBranchSum)); //can take the best of left and/or right, but only if it benefits
+	}
+
+	/*
 	public int maxPathSum(TreeNode root) {
 		//if root < 0, check if we can get a max from the left subtree
 		//basically, we want to see if it's worth including root+ some optimal path in the left tree with the optimal path on the right
@@ -38,4 +59,5 @@ class BinaryTreeMaximumPathSum {
 		//include maxLeft or include maxRight ?
 		return Math.max(root.val, Math.max(root.val + maxLeft, root.val + maxRight));
 	}
+	*/
 }

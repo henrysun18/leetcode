@@ -1,5 +1,5 @@
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -7,43 +7,37 @@ import java.util.List;
  */
 class ThreeSum {
 	public List<List<Integer>> threeSum(int[] nums) {
-		List<List<Integer>> result = new LinkedList<>();
+		List<List<Integer>> sol = new ArrayList<>();
 
+		//if we sort nums then we can try all candidate triplets in n^2 time
 		Arrays.sort(nums);
-		for (int i = 0; i < nums.length - 2; i++) {
-			int a = nums[i];
-			if (i > 0 && a == nums[i-1]) {
-				continue; //ignore duplicates by only picking unique values for a
-			}
+		for (int i = 0; i < nums.length-2; i++) {
+			if (i > 0 && nums[i] == nums[i-1]) continue;
 
-			int left = i + 1;
-			int right = nums.length - 1;
-
-			while (left < right) {
-				int b = nums[left];
-				int c = nums[right];
-				int sum = a + b + c;
+			int l = i+1;
+			int r = nums.length-1;
+			while (l < r) {
+				int sum = nums[l] + nums[r] + nums[i];
 				if (sum == 0) {
-					result.add(Arrays.asList(a, b, c));
+					sol.add(Arrays.asList(nums[i], nums[l], nums[r]));
 
-					while (left < right && b == nums[left]) {
-						left++;
+					//increment l until we find new value; decrement r until we find new value
+					while (l+1 < nums.length && nums[l] == nums[l+1]) {
+						l++;
 					}
-					while (left < right && c == nums[right]) {
-						right--;
+					while (r-1 >= 0 && nums[r-1] == nums[r]) {
+						r--;
 					}
+					l++;
+					r--;
 				} else if (sum < 0) {
-					while (left < right && b == nums[left]) {
-						left++;
-					}
+					l++; //don't need to put a while loop here since the parent while loop handles it anyway
 				} else {
-					while (left < right && c == nums[right]) {
-						right--;
-					}
+					r--;
 				}
 			}
 		}
 
-		return result;
+		return sol;
 	}
 }

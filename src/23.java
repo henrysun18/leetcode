@@ -38,27 +38,17 @@ class MergeKSortedLists {
 		if (list1 == null) return list2;
 		if (list2 == null) return list1;
 
-		ListNode head = null;
-		ListNode curr = null;
+		ListNode head = new ListNode(0); //temporary
+		ListNode curr = head;
 		while (list1 != null && list2 != null) {
 			if (list1.val < list2.val) {
-				if (head == null) {
-					head = list1;
-					curr = head;
-				} else {
-					curr.next = list1;
-					curr = curr.next;
-				}
+				curr.next = list1;
 				list1 = list1.next;
+				curr = curr.next;
 			} else {
-				if (head == null) {
-					head = list2;
-					curr = head;
-				} else {
-					curr.next = list2;
-					curr = curr.next;
-				}
+				curr.next = list2;
 				list2 = list2.next;
+				curr = curr.next;
 			}
 		}
 
@@ -68,6 +58,6 @@ class MergeKSortedLists {
 			curr.next = list2;
 		}
 
-		return head;
+		return head.next;
 	}
 }

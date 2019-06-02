@@ -1,7 +1,6 @@
+import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.Queue;
 
 /**
  * Definition for singly-linked list.
@@ -13,63 +12,62 @@ import java.util.TreeMap;
  */
 class MergeKSortedLists {
 	public ListNode mergeKLists(ListNode[] lists) {
-		//go through all lists, find the lowest value head
-		//need to go through k lists, n times where n is the total amount of elements
-		// time complexity O(n*k), space complexity O(n) since we have to recurse n times
-		int indexOfListWithSmallestHead = 0;
-		ListNode smallestHeadNode = null;
-		for (int i = 0; i < lists.length; i++) {
-			if (lists[i] != null) {
-				if (smallestHeadNode == null) {
-					smallestHeadNode = lists[i];
-					indexOfListWithSmallestHead = i;
-				}
-				if (lists[i].val < lists[indexOfListWithSmallestHead].val) {
-					smallestHeadNode = lists[i];
-					indexOfListWithSmallestHead = i;
+		//divide and conquer to get runtime O(nlogk); merging n elements logk times
+		//intuition is that if we merge 2 lists at a time, we halve the amount of lists we need to merge again
+		//this halving keeps going each time we merge, and thus we only need to repeat this logk times
+		Queue<ListNode> headsToDivideAndMerge = new LinkedList<>(Arrays.asList(lists));
+		while (headsToDivideAndMerge.size() > 1) {
+			int numLists = headsToDivideAndMerge.size();
+			for (int pair = 0; pair < numLists/2; pair++) {
+				ListNode list1 = headsToDivideAndMerge.poll();
+				ListNode list2 = headsToDivideAndMerge.poll();
+
+				ListNode sortedSublist = mergeSortedLists(list1, list2);
+				if (sortedSublist != null) {
+					headsToDivideAndMerge.add(sortedSublist);
 				}
 			}
+			//if odd, assume remaining list is already merged and continue
+			//that is, don't poll it from the queue
 		}
 
-		if (smallestHeadNode == null) {
-			//all lists are null, base case where we return null
-			return null;
-		}
-		lists[indexOfListWithSmallestHead] = lists[indexOfListWithSmallestHead].next;
-		smallestHeadNode.next = mergeKLists(lists);
-		return smallestHeadNode;
+		return headsToDivideAndMerge.poll();
 	}
 
-	public ListNode mergeKListsEfficient(ListNode[] lists) {
-		//O(n) time since we make two passes, one to populate map and one to merge
-		//O(n) space since we're storing references to all n nodes in the treemap
-		TreeMap<Integer, List<ListNode>> map = new TreeMap<>();
-		//for each element in lists,
-		//store it in a treemap, hash by value and store append to list
-		for (ListNode listNode : lists) {
-			while (listNode != null) {
-				if (!map.containsKey(listNode.val)) {
-					map.put(listNode.val, new LinkedList<>());
-				}
-				map.get(listNode.val).add(listNode);
-				listNode = listNode.next;
-			}
-		}
-		//go through treemap in order and merge
+	private ListNode mergeSortedLists(ListNode list1, ListNode list2) {
+		if (list1 == null) return list2;
+		if (list2 == null) return list1;
+
 		ListNode head = null;
 		ListNode curr = null;
-		for (Map.Entry<Integer, List<ListNode>> treeEntry : map.entrySet()) {
-			List<ListNode> listOfNodes = treeEntry.getValue();
-			for (ListNode node : listOfNodes) {
+		while (list1 != null && list2 != null) {
+			if (list1.val < list2.val) {
 				if (head == null) {
-					head = node;
+					head = list1;
 					curr = head;
 				} else {
-					curr.next = node;
+					curr.next = list1;
 					curr = curr.next;
 				}
+				list1 = list1.next;
+			} else {
+				if (head == null) {
+					head = list2;
+					curr = head;
+				} else {
+					curr.next = list2;
+					curr = curr.next;
+				}
+				list2 = list2.next;
 			}
 		}
+
+		if (list1 != null) {
+			curr.next = list1;
+		} else if (list2 != null) {
+			curr.next = list2;
+		}
+
 		return head;
 	}
 }
